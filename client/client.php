@@ -18,7 +18,7 @@
 // 1- Install the plugin
 // 2- Enable web service advance feature (Admin > Advanced features)
 // 3- Enable XMLRPC protocol (Admin > Plugins > Web services > Manage protocols)
-// 4- Create a token for a specific user (Admin > Plugins > Web services > Manage tokens)
+// 4- Create a token for a specific user and for the service 'My service' (Admin > Plugins > Web services > Manage tokens)
 // 5- Run this script directly from your browser: you should see 'Hello, FIRSTNAME'
 
 /// SETUP - NEED TO BE CHANGED
