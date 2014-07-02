@@ -16,13 +16,13 @@
 /**
  * External Web Service Template
  *
- * @package    localwstemplate
+ * @package    localwsmiidle
  * @copyright  2011 Moodle Pty Ltd (http://moodle.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require_once($CFG->libdir . "/externallib.php");
 
-class local_wstemplate_external extends external_api {
+class local_wsmiidle_external extends external_api {
 
     /**
      * Returns description of method parameters
@@ -67,7 +67,26 @@ class local_wstemplate_external extends external_api {
     public static function hello_world_returns() {
         return new external_value(PARAM_TEXT, 'The welcome message + user first name');
     }
+    
 
 
 
+    public static function create_discipline() {
+        return array('status' => 'ok', 'message' => 'uhuuu');
+    }
+    // public static function update_discipline() {
+    //     return array('status' => 'ok', 'message' => 'uhuuu');
+    // }
+    // public static function create_user() {
+    //     return array('status' => 'ok', 'message' => 'uhuuu');
+    // }
+    // public static function update_user() {
+    //     return array('status' => 'ok', 'message' => 'uhuuu');
+    // }
+    // public static function enroll_user_course() {
+    //     return array('status' => 'ok', 'message' => 'uhuuu');
+    // }
+    // public static function enroll_user_discipline() {
+    //     return array('status' => 'ok', 'message' => 'uhuuu');
+    // }
 }

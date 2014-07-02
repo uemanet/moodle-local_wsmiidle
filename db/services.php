@@ -16,27 +16,109 @@
 /**
  * Web service local plugin template external functions and service definitions.
  *
- * @package    localwstemplate
+ * @package    localwsmiidle
  * @copyright  2011 Jerome Mouneyrac
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 // We defined the web service functions to install.
 $functions = array(
-        'local_wstemplate_hello_world' => array(
-                'classname'   => 'local_wstemplate_external',
+        'local_wsmiidle_hello_world' => array(
+                'classname'   => 'local_wsmiidle_external',
                 'methodname'  => 'hello_world',
-                'classpath'   => 'local/wstemplate/externallib.php',
+                'classpath'   => 'local/wsmiidle/externallib.php',
                 'description' => 'Return Hello World FIRSTNAME. Can change the text (Hello World) sending a new text as parameter',
                 'type'        => 'read',
+        ),
+        'local_wsmiidle_create_course' => array(
+                'classname'   => 'local_wsmiidle_course',
+                'methodname'  => 'create_course',
+                'classpath'   => 'local/wsmiidle/course.php',
+                'description' => 'Creates new course.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_update_course' => array(
+                'classname'   => 'local_wsmiidle_course',
+                'methodname'  => 'update_course',
+                'classpath'   => 'local/wsmiidle/course.php',
+                'description' => 'Update a course.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_create_student' => array(
+                'classname'   => 'local_wsmiidle_student',
+                'methodname'  => 'create_student',
+                'classpath'   => 'local/wsmiidle/user.php',
+                'description' => 'Creates new student.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_update_student' => array(
+                'classname'   => 'local_wsmiidle_student',
+                'methodname'  => 'update_student',
+                'classpath'   => 'local/wsmiidle/user.php',
+                'description' => 'Update a student.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_create_teacher' => array(
+                'classname'   => 'local_wsmiidle_teacher',
+                'methodname'  => 'create_teacher',
+                'classpath'   => 'local/wsmiidle/user.php',
+                'description' => 'Creates new teacher.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_update_teacher' => array(
+                'classname'   => 'local_wsmiidle_teacher',
+                'methodname'  => 'update_teacher',
+                'classpath'   => 'local/wsmiidle/user.php',
+                'description' => 'Update a teacher.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_create_discipline' => array(
+                'classname'   => 'local_wsmiidle_discipline',
+                'methodname'  => 'create_discipline',
+                'classpath'   => 'local/wsmiidle/discipline.php',
+                'description' => 'Creates new discipline.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_update_discipline' => array(
+                'classname'   => 'local_wsmiidle_discipline',
+                'methodname'  => 'update_discipline',
+                'classpath'   => 'local/wsmiidle/discipline.php',
+                'description' => 'Update a discipline.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_enroll_user_course' => array(
+                'classname'   => 'local_wsmiidle_enroll',
+                'methodname'  => 'enroll_user_course',
+                'classpath'   => 'local/wsmiidle/enroll.php',
+                'description' => 'Enroll a user in a course.',
+                'type'        => 'write',
+        ),
+        'local_wsmiidle_enroll_user_discipline' => array(
+                'classname'   => 'local_wsmiidle_enroll',
+                'methodname'  => 'enroll_user_discipline',
+                'classpath'   => 'local/wsmiidle/enroll.php',
+                'description' => 'Enroll a user in a discipline.',
+                'type'        => 'write',
         )
 );
 
 // We define the services to install as pre-build services. A pre-build service is not editable by administrator.
 $services = array(
-        'My service' => array(
-                'functions' => array ('local_wstemplate_hello_world'),
-                'restrictedusers' => 0,
+        'Miidle Web Service' => array(
+                'functions' => array(
+                                'local_wsmiidle_hello_world',
+                                'local_wsmiidle_create_course',
+                                'local_wsmiidle_update_course',
+                                'local_wsmiidle_create_student',
+                                'local_wsmiidle_update_student',
+                                'local_wsmiidle_create_teacher',
+                                'local_wsmiidle_update_teacher',
+                                'local_wsmiidle_create_discipline',
+                                'local_wsmiidle_update_discipline',
+                                'local_wsmiidle_enroll_user_course',
+                                'local_wsmiidle_enroll_user_discipline'
+                ),
+                'restrictedusers' => 1,
                 'enabled'=>1,
         )
 );
