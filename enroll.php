@@ -41,7 +41,7 @@ class local_wsmiidle_enroll extends external_api {
                     array(
                         'mat_id' => new external_value(PARAM_INT, 'Id da matricula na turma no gestor'),
                         'trm_id' => new external_value(PARAM_INT, 'Id da turma'),
-                        'mat_codigo' => new external_value(PARAM_INT, 'Codigo da matricula'),
+                        'mat_codigo' => new external_value(PARAM_TEXT, 'Codigo da matricula'),
                     )
                 )
             )
@@ -75,7 +75,7 @@ class local_wsmiidle_enroll extends external_api {
                     array(
                         'mof_id' => new external_value(PARAM_INT, 'Id da matricula na disciplina no gestor'),
                         'ofd_id' => new external_value(PARAM_INT, 'Id da disciplina oferecida'),
-                        'alu_id' => new external_value(PARAM_INT, 'Id do aluno'),
+                        'alu_id' => new external_value(PARAM_TEXT, 'Id do aluno'),
                     )
                 )
             )

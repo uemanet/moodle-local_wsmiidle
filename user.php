@@ -40,12 +40,12 @@ class local_wsmiidle_user extends external_api {
                 'student' => new external_single_structure(
                     array(
                         'alu_id' => new external_value(PARAM_INT, 'Id do aluno no gestor'),
-                        'firstname' => new external_value(PARAM_INT, 'Primeiro nome do aluno'),
+                        'firstname' => new external_value(PARAM_TEXT, 'Primeiro nome do aluno'),
                         'lastname' => new external_value(PARAM_TEXT, 'Ultimo nome do aluno'),
                         'email' => new external_value(PARAM_TEXT, 'Email do aluno'),
-                        'username' => new external_value(PARAM_INT, 'Usuario de acesso do aluno'),
+                        'username' => new external_value(PARAM_TEXT, 'Usuario de acesso do aluno'),
                         'password' => new external_value(PARAM_TEXT, 'Senha do aluno'),
-                        'city' => new external_value(PARAM_INT, 'Cidade do aluno')
+                        'city' => new external_value(PARAM_TEXT, 'Cidade do aluno')
                     )
                 )
             )
@@ -77,12 +77,12 @@ class local_wsmiidle_user extends external_api {
                 'student' => new external_single_structure(
                     array(
                         'alu_id' => new external_value(PARAM_INT, 'Id do aluno no gestor'),
-                        'firstname' => new external_value(PARAM_INT, 'Primeiro nome do aluno'),
+                        'firstname' => new external_value(PARAM_TEXT, 'Primeiro nome do aluno'),
                         'lastname' => new external_value(PARAM_TEXT, 'Ultimo nome do aluno'),
                         'email' => new external_value(PARAM_TEXT, 'Email do aluno'),
-                        'username' => new external_value(PARAM_INT, 'Usuario de acesso do aluno'),
+                        'username' => new external_value(PARAM_TEXT, 'Usuario de acesso do aluno'),
                         'password' => new external_value(PARAM_TEXT, 'Senha do aluno'),
-                        'city' => new external_value(PARAM_INT, 'Cidade do aluno')
+                        'city' => new external_value(PARAM_TEXT, 'Cidade do aluno')
                     )
                 )
             )
@@ -98,9 +98,6 @@ class local_wsmiidle_user extends external_api {
         );
     }
 
-    // // // // //
-    // TEACHER  //
-    // // // // //
     public static function create_teacher($teacher) {
 
         //validate parameters
@@ -118,12 +115,12 @@ class local_wsmiidle_user extends external_api {
                 'teacher' => new external_single_structure(
                     array(
                         'prf_id' => new external_value(PARAM_INT, 'Id do professor no gestor'),
-                        'firstname' => new external_value(PARAM_INT, 'Primeiro nome do professor'),
+                        'firstname' => new external_value(PARAM_TEXT, 'Primeiro nome do professor'),
                         'lastname' => new external_value(PARAM_TEXT, 'Ultimo nome do professor'),
                         'email' => new external_value(PARAM_TEXT, 'Email do professor'),
-                        'username' => new external_value(PARAM_INT, 'Usuario de acesso do professor'),
+                        'username' => new external_value(PARAM_TEXT, 'Usuario de acesso do professor'),
                         'password' => new external_value(PARAM_TEXT, 'Senha do professor'),
-                        'city' => new external_value(PARAM_INT, 'Cidade do professor')
+                        'city' => new external_value(PARAM_TEXT, 'Cidade do professor')
                     )
                 )
             )
@@ -149,18 +146,18 @@ class local_wsmiidle_user extends external_api {
                 'message' => 'Professor alterado com sucesso'
             );
     }
-    public static function update_teacher_parameters($teacher) {
+    public static function update_teacher_parameters() {
         return new external_function_parameters(
             array(
                 'teacher' => new external_single_structure(
                     array(
                         'prf_id' => new external_value(PARAM_INT, 'Id do professor no gestor'),
-                        'firstname' => new external_value(PARAM_INT, 'Primeiro nome do professor'),
+                        'firstname' => new external_value(PARAM_TEXT, 'Primeiro nome do professor'),
                         'lastname' => new external_value(PARAM_TEXT, 'Ultimo nome do professor'),
                         'email' => new external_value(PARAM_TEXT, 'Email do professor'),
-                        'username' => new external_value(PARAM_INT, 'Usuario de acesso do professor'),
+                        'username' => new external_value(PARAM_TEXT, 'Usuario de acesso do professor'),
                         'password' => new external_value(PARAM_TEXT, 'Senha do professor'),
-                        'city' => new external_value(PARAM_INT, 'Cidade do professor')
+                        'city' => new external_value(PARAM_TEXT, 'Cidade do professor')
                     )
                 )
             )

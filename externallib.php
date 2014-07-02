@@ -67,26 +67,4 @@ class local_wsmiidle_external extends external_api {
     public static function hello_world_returns() {
         return new external_value(PARAM_TEXT, 'The welcome message + user first name');
     }
-    
-
-
-
-    public static function create_discipline() {
-        return array('status' => 'ok', 'message' => 'uhuuu');
-    }
-    // public static function update_discipline() {
-    //     return array('status' => 'ok', 'message' => 'uhuuu');
-    // }
-    // public static function create_user() {
-    //     return array('status' => 'ok', 'message' => 'uhuuu');
-    // }
-    // public static function update_user() {
-    //     return array('status' => 'ok', 'message' => 'uhuuu');
-    // }
-    // public static function enroll_user_course() {
-    //     return array('status' => 'ok', 'message' => 'uhuuu');
-    // }
-    // public static function enroll_user_discipline() {
-    //     return array('status' => 'ok', 'message' => 'uhuuu');
-    // }
 }
