@@ -24,15 +24,43 @@ require_once($CFG->libdir . "/externallib.php");
 class local_wsmiidle_user extends external_api {
 
     public static function create_student($student) {
+        global $DB;
 
         //validate parameters
         $params = self::validate_parameters(self::create_student_parameters(), array('student' => $student));
 
-        return array(
-            'id' => 0,
-            'status' => 'success',
-            'message' => 'Aluno criado com sucesso'
-        );
+        // Transforma o array em objeto.
+        $student = (object)$student;
+
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+
+        // Busca o id do usuario apartir do alu_id do aluno.
+        $userid = self::find_user_by_alu_id($student->alu_id);
+
+        // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
+        if($userid) {
+            throw new Exception("Essa aluno ja esta mapeado com o usuario de id: " . $userid);
+        }
+        
+        // Cria o usuario usando a biblioteca do proprio moodle.
+        $userid = self::save_user($student);
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
+
+        // Prepara o array de retorno.
+        if($userid) {
+            $returndata['id'] = $userid;
+            $returndata['status'] = 'success';
+            $returndata['message'] = 'Usuario criado com sucesso';
+        } else {
+            $returndata['id'] = 0;
+            $returndata['status'] = 'error';
+            $returndata['message'] = 'Erro ao tentar criar o usuario';
+        }
+
+        return $returndata;
     }
     public static function create_student_parameters() {
         return new external_function_parameters(
@@ -171,5 +199,47 @@ class local_wsmiidle_user extends external_api {
                 'message' => new external_value(PARAM_TEXT, 'Mensagem de retorno da operacao')
             )
         );
+    }
+    protected static function find_user_by_alu_id($alu_id) {
+        global $DB;
+        
+        // Busca o id do usuario apartir do alu_id do aluno.
+        $sql = "SELECT userid FROM {itg_alunos_users} WHERE alu_id = :alu_id";
+        $params['alu_id'] = $alu_id;
+        $userid = current($DB->get_records_sql($sql, $params));
+
+        if($userid) {
+            $userid = $userid->userid;
+        } else {
+            $userid = 0;
+        }
+
+        return $userid;
+    }
+    protected static function save_user($user) {
+        global $CFG, $DB;
+
+        // Inlcui a biblioteca de aluno do moodle
+        require_once("{$CFG->dirroot}/user/lib.php");
+
+        // Cria o curso usando a biblioteca do proprio moodle.
+        $user->confirmed = 1;
+        $user->mnethostid = 1;
+        $userid = user_create_user($user);
+        
+        // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
+        if($userid) {
+            $data['alu_id'] = $user->alu_id;
+            $data['userid'] = $userid;
+            $data['timecreated'] = time();
+            $data['timemodified'] = $data['timecreated'];
+
+            $res = $DB->insert_record('itg_alunos_users', $data);
+        }
+
+        return $userid;
+    }
+    protected static function update_user($user) {
+
     }
 }

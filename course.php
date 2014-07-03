@@ -26,21 +26,44 @@ class local_wsmiidle_course extends external_api {
     public static function create_course($course) {
         global $CFG, $DB;
 
-        //validate parameters
+        // Valida os parametros.
         $params = self::validate_parameters(self::create_course_parameters(), array('course' => $course));
 
+        // Inlcui a biblioteca de curso do moodle
         require_once("{$CFG->dirroot}/course/lib.php");
 
+        // Transforma o array em objeto.
         $course = (object)$course;
 
-        $trm_id = $course->trm_id;
-        unset($course->trm_id);
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
 
-        // $transaction = $DB->start_delegated_transaction();
-        // $result = create_course($course);
-        // $transaction->allow_commit();
+        // Busca o id do curso apartir do trm_id da turma.
+        $courseid = self::get_course_by_trm_id($course->trm_id);
 
+        // Dispara uma excessao se essa turma ja estiver mapeado para um curso.
+        if($courseid) {
+            throw new Exception("Essa turma ja esta mapeada com o curso de id: " . $courseid);
+        }
+        
+        // Cria o curso usando a biblioteca do proprio moodle.
+        $result = create_course($course);
+
+        // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
         if($result->id) {
+            $data['trm_id'] = $course->trm_id;
+            $data['courseid'] = $result->id;
+            $data['timecreated'] = time();
+            $data['timemodified'] = $data['timecreated'];
+
+            $res = $DB->insert_record('itg_turmas_cursos', $data);
+        }
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
+
+        // Prepara o array de retorno.
+        if($res) {
             $returndata['id'] = $result->id;
             $returndata['status'] = 'success';
             $returndata['message'] = 'Curso criado com sucesso';
@@ -80,15 +103,42 @@ class local_wsmiidle_course extends external_api {
         );
     }
     public static function update_course($course) {
+        global $CFG, $DB;
 
-        //validate parameter
-        $params = self::validate_parameters(self::create_course_parameters(), array('course' => $course));
-        
-        return array(
-                'id' => 0,
-                'status' => 'success',
-                'message' => 'Curso alterado com sucesso'
-            );
+        // Valida os parametros.
+        $params = self::validate_parameters(self::update_course_parameters(), array('course' => $course));
+
+        // Inlcui a biblioteca de cursos do moodle
+        require_once("{$CFG->dirroot}/course/lib.php");
+
+        // Transforma o array em objeto.
+        $course = (object)$course;
+
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+
+        // Busca o id do curso apartir do trm_id da turma.
+        $courseid = self::get_course_by_trm_id($course->trm_id);
+
+        // Se nao existir curso mapeado para a turma dispara uma excessao.
+        if($courseid) {
+            $course->id = $courseid;
+        } else {
+            throw new Exception("Nenhum curso mapeado com a turma com trm_id: " . $course->trm_id);
+        }
+
+        // Cria o curso usando a biblioteca do proprio moodle.
+        update_course($course);
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
+
+        // Prepara o array de retorno.
+        $returndata['id'] = $courseid;
+        $returndata['status'] = 'success';
+        $returndata['message'] = "Curso atualizado com sucesso";
+
+        return $returndata;
     }
     public static function update_course_parameters() {
         return new external_function_parameters(
@@ -113,5 +163,21 @@ class local_wsmiidle_course extends external_api {
                 'message' => new external_value(PARAM_TEXT, 'Operation return message')
             )
         );
+    }
+    protected static function get_course_by_trm_id($trm_id) {
+        global $DB;
+        
+        // Busca o id do curso apartir do trm_id da turma.
+        $sql = "SELECT courseid FROM {itg_turmas_cursos} WHERE trm_id = :trm_id";
+        $params['trm_id'] = $trm_id;
+        $courseid = current($DB->get_records_sql($sql, $params));
+
+        if($courseid) {
+            $courseid = $courseid->courseid;
+        } else {
+            $courseid = 0;
+        }
+
+        return $courseid;
     }
 }
