@@ -44,7 +44,7 @@ class local_wsmiidle_user extends external_api {
         }
         
         // Cria o usuario usando a biblioteca do proprio moodle.
-        $userid = self::save_user($student);
+        $userid = self::save_student($student);
 
         // Persiste as operacoes em caso de sucesso.
         $transaction->allow_commit();
@@ -89,15 +89,38 @@ class local_wsmiidle_user extends external_api {
         );
     }
     public static function update_student($student) {
+        global $DB;
 
         //validate parameters
         $params = self::validate_parameters(self::update_student_parameters(), array('student' => $student));
 
-        return array(
-                'id' => 0,
-                'status' => 'success',
-                'message' => 'Aluno alterado com sucesso'
-            );
+        // Transforma o array em objeto.
+        $student = (object)$student;
+
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+
+        // Busca o id do usuario apartir do alu_id do aluno.
+        $userid = self::find_user_by_alu_id($student->alu_id);
+
+        // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
+        if(!$userid) {
+            throw new Exception("Nenhum usuario esta mapeado para o aluno com alu_id: " . $student->alu_id);
+        }
+
+        $student->id = $userid;
+        // Cria o usuario usando a biblioteca do proprio moodle.
+        self::update_user($student);
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
+
+        // Prepara o array de retorno.
+        $returndata['id'] = $userid;
+        $returndata['status'] = 'success';
+        $returndata['message'] = 'Usuario atualizado com sucesso';
+
+        return $returndata;
     }
     public static function update_student_parameters() {
         return new external_function_parameters(
@@ -108,8 +131,6 @@ class local_wsmiidle_user extends external_api {
                         'firstname' => new external_value(PARAM_TEXT, 'Primeiro nome do aluno'),
                         'lastname' => new external_value(PARAM_TEXT, 'Ultimo nome do aluno'),
                         'email' => new external_value(PARAM_TEXT, 'Email do aluno'),
-                        'username' => new external_value(PARAM_TEXT, 'Usuario de acesso do aluno'),
-                        'password' => new external_value(PARAM_TEXT, 'Senha do aluno'),
                         'city' => new external_value(PARAM_TEXT, 'Cidade do aluno')
                     )
                 )
@@ -127,15 +148,43 @@ class local_wsmiidle_user extends external_api {
     }
 
     public static function create_teacher($teacher) {
+        global $DB;
 
         //validate parameters
         $params = self::validate_parameters(self::create_teacher_parameters(), array('teacher' => $teacher));
 
-        return array(
-            'id' => 0,
-            'status' => 'success',
-            'message' => 'Professor criado com sucesso'
-        );
+        // Transforma o array em objeto.
+        $teacher = (object)$teacher;
+
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+
+        // Busca o id do usuario apartir do alu_id do aluno.
+        $userid = self::find_user_by_prf_id($teacher->prf_id);
+
+        // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
+        if($userid) {
+            throw new Exception("Essa professor ja esta mapeado com o usuario de id: " . $userid);
+        }
+        
+        // Cria o usuario usando a biblioteca do proprio moodle.
+        $userid = self::save_teacher($teacher);
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
+
+        // Prepara o array de retorno.
+        if($userid) {
+            $returndata['id'] = $userid;
+            $returndata['status'] = 'success';
+            $returndata['message'] = 'Usuario criado com sucesso';
+        } else {
+            $returndata['id'] = 0;
+            $returndata['status'] = 'error';
+            $returndata['message'] = 'Erro ao tentar criar o usuario';
+        }
+
+        return $returndata;
     }
     public static function create_teacher_parameters() {
         return new external_function_parameters(
@@ -164,15 +213,38 @@ class local_wsmiidle_user extends external_api {
         );
     }
     public static function update_teacher($teacher) {
-        
+        global $DB;
+
         //validate parameters
         $params = self::validate_parameters(self::update_teacher_parameters(), array('teacher' => $teacher));
 
-        return array(
-                'id' => 0,
-                'status' => 'success',
-                'message' => 'Professor alterado com sucesso'
-            );
+        // Transforma o array em objeto.
+        $teacher = (object)$teacher;
+
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+
+        // Busca o id do usuario apartir do prf_id do aluno.
+        $userid = self::find_user_by_prf_id($teacher->prf_id);
+
+        // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
+        if(!$userid) {
+            throw new Exception("Nenhum usuario esta mapeado para o professor com prf_id: " . $teacher->prf_id);
+        }
+
+        $teacher->id = $userid;
+        // Cria o usuario usando a biblioteca do proprio moodle.
+        self::update_user($teacher);
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
+
+        // Prepara o array de retorno.
+        $returndata['id'] = $userid;
+        $returndata['status'] = 'success';
+        $returndata['message'] = 'Usuario atualizado com sucesso';
+
+        return $returndata;
     }
     public static function update_teacher_parameters() {
         return new external_function_parameters(
@@ -183,8 +255,6 @@ class local_wsmiidle_user extends external_api {
                         'firstname' => new external_value(PARAM_TEXT, 'Primeiro nome do professor'),
                         'lastname' => new external_value(PARAM_TEXT, 'Ultimo nome do professor'),
                         'email' => new external_value(PARAM_TEXT, 'Email do professor'),
-                        'username' => new external_value(PARAM_TEXT, 'Usuario de acesso do professor'),
-                        'password' => new external_value(PARAM_TEXT, 'Senha do professor'),
                         'city' => new external_value(PARAM_TEXT, 'Cidade do professor')
                     )
                 )
@@ -216,6 +286,52 @@ class local_wsmiidle_user extends external_api {
 
         return $userid;
     }
+    protected static function find_user_by_prf_id($prf_id) {
+        global $DB;
+        
+        // Busca o id do usuario apartir do prf_id do professor.
+        $sql = "SELECT userid FROM {itg_professores_users} WHERE prf_id = :prf_id";
+        $params['prf_id'] = $prf_id;
+        $userid = current($DB->get_records_sql($sql, $params));
+
+        if($userid) {
+            $userid = $userid->userid;
+        } else {
+            $userid = 0;
+        }
+
+        return $userid;
+    }
+    protected static function save_student($student){
+        global $DB;
+
+        $userid = self::save_user($student);
+
+        // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
+        $data['alu_id'] = $student->alu_id;
+        $data['userid'] = $userid;
+        $data['timecreated'] = time();
+        $data['timemodified'] = $data['timecreated'];
+
+        $res = $DB->insert_record('itg_alunos_users', $data);
+        
+        return $userid;
+    }
+    protected static function save_teacher($teacher){
+        global $DB;
+
+        $userid = self::save_user($teacher);
+
+        // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
+        $data['prf_id'] = $teacher->prf_id;
+        $data['userid'] = $userid;
+        $data['timecreated'] = time();
+        $data['timemodified'] = $data['timecreated'];
+
+        $res = $DB->insert_record('itg_professores_users', $data);
+
+        return $userid;
+    }
     protected static function save_user($user) {
         global $CFG, $DB;
 
@@ -226,20 +342,16 @@ class local_wsmiidle_user extends external_api {
         $user->confirmed = 1;
         $user->mnethostid = 1;
         $userid = user_create_user($user);
-        
-        // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
-        if($userid) {
-            $data['alu_id'] = $user->alu_id;
-            $data['userid'] = $userid;
-            $data['timecreated'] = time();
-            $data['timemodified'] = $data['timecreated'];
-
-            $res = $DB->insert_record('itg_alunos_users', $data);
-        }
 
         return $userid;
     }
     protected static function update_user($user) {
+        global $CFG, $DB;
 
+        // Inlcui a biblioteca de aluno do moodle
+        require_once("{$CFG->dirroot}/user/lib.php");
+
+        // Atualiza o curso usando a biblioteca do proprio moodle.
+        user_update_user($user);
     }
 }
