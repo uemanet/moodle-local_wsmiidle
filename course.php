@@ -53,8 +53,6 @@ class local_wsmiidle_course extends external_api {
         if($result->id) {
             $data['trm_id'] = $course->trm_id;
             $data['courseid'] = $result->id;
-            $data['timecreated'] = time();
-            $data['timemodified'] = $data['timecreated'];
 
             $res = $DB->insert_record('itg_turmas_cursos', $data);
         }

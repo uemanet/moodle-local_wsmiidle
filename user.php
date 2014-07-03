@@ -310,8 +310,6 @@ class local_wsmiidle_user extends external_api {
         // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
         $data['alu_id'] = $student->alu_id;
         $data['userid'] = $userid;
-        $data['timecreated'] = time();
-        $data['timemodified'] = $data['timecreated'];
 
         $res = $DB->insert_record('itg_alunos_users', $data);
         
@@ -325,8 +323,6 @@ class local_wsmiidle_user extends external_api {
         // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
         $data['prf_id'] = $teacher->prf_id;
         $data['userid'] = $userid;
-        $data['timecreated'] = time();
-        $data['timemodified'] = $data['timecreated'];
 
         $res = $DB->insert_record('itg_professores_users', $data);
 
