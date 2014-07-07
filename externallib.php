@@ -30,7 +30,13 @@ class local_wsmiidle_external extends external_api {
      */
     public static function hello_world_parameters() {
         return new external_function_parameters(
-                array('welcomemessage' => new external_value(PARAM_TEXT, 'The welcome message. By default it is "Hello world,"', VALUE_DEFAULT, 'Hello world, '))
+            array(
+                'hello' => new external_single_structure(
+                    array(
+                        'message' => new external_value(PARAM_TEXT, 'Mensagem'),
+                    )
+                )
+            )
         );
     }
 
@@ -38,26 +44,13 @@ class local_wsmiidle_external extends external_api {
      * Returns welcome message
      * @return string welcome message
      */
-    public static function hello_world($welcomemessage = 'Hello world, ') {
-        global $USER;
+    public static function hello_world($message) {
+        // Valida os parametros.
+        $params = self::validate_parameters(self::hello_world_parameters(), array('hello' => $message));
 
-        //Parameter validation
-        //REQUIRED
-        $params = self::validate_parameters(self::hello_world_parameters(),
-                array('welcomemessage' => $welcomemessage));
+        $returndata['message'] = $message['message'] . ' no retorno';
 
-        //Context validation
-        //OPTIONAL but in most web service it should present
-        $context = get_context_instance(CONTEXT_USER, $USER->id);
-        self::validate_context($context);
-
-        //Capability checking
-        //OPTIONAL but in most web service it should present
-        if (!has_capability('moodle/user:viewdetails', $context)) {
-            throw new moodle_exception('cannotviewprofile');
-        }
-
-        return $params['welcomemessage'] . $USER->firstname ;;
+        return $returndata;
     }
 
     /**
@@ -65,6 +58,10 @@ class local_wsmiidle_external extends external_api {
      * @return external_description
      */
     public static function hello_world_returns() {
-        return new external_value(PARAM_TEXT, 'The welcome message + user first name');
+        return new external_single_structure(
+            array(
+                'message' => new external_value(PARAM_TEXT, 'Mensagem de retorno da operacao')
+            )
+        );
     }
 }
