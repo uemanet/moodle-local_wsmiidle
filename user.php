@@ -274,7 +274,7 @@ class local_wsmiidle_user extends external_api {
         global $DB;
         
         // Busca o id do usuario apartir do alu_id do aluno.
-        $sql = "SELECT userid FROM {itg_alunos_users} WHERE alu_id = :alu_id";
+        $sql = "SELECT userid FROM {itg_aluno_user} WHERE alu_id = :alu_id";
         $params['alu_id'] = $alu_id;
         $userid = current($DB->get_records_sql($sql, $params));
 
@@ -290,7 +290,7 @@ class local_wsmiidle_user extends external_api {
         global $DB;
         
         // Busca o id do usuario apartir do prf_id do professor.
-        $sql = "SELECT userid FROM {itg_professores_users} WHERE prf_id = :prf_id";
+        $sql = "SELECT userid FROM {itg_professor_user} WHERE prf_id = :prf_id";
         $params['prf_id'] = $prf_id;
         $userid = current($DB->get_records_sql($sql, $params));
 
@@ -311,7 +311,7 @@ class local_wsmiidle_user extends external_api {
         $data['alu_id'] = $student->alu_id;
         $data['userid'] = $userid;
 
-        $res = $DB->insert_record('itg_alunos_users', $data);
+        $res = $DB->insert_record('itg_aluno_user', $data);
         
         return $userid;
     }
@@ -324,7 +324,7 @@ class local_wsmiidle_user extends external_api {
         $data['prf_id'] = $teacher->prf_id;
         $data['userid'] = $userid;
 
-        $res = $DB->insert_record('itg_professores_users', $data);
+        $res = $DB->insert_record('itg_professor_user', $data);
 
         return $userid;
     }

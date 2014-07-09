@@ -54,7 +54,7 @@ class local_wsmiidle_course extends external_api {
             $data['trm_id'] = $course->trm_id;
             $data['courseid'] = $result->id;
 
-            $res = $DB->insert_record('itg_turmas_cursos', $data);
+            $res = $DB->insert_record('itg_turma_course', $data);
         }
 
         // Persiste as operacoes em caso de sucesso.
@@ -166,7 +166,7 @@ class local_wsmiidle_course extends external_api {
         global $DB;
         
         // Busca o id do curso apartir do trm_id da turma.
-        $sql = "SELECT courseid FROM {itg_turmas_cursos} WHERE trm_id = :trm_id";
+        $sql = "SELECT courseid FROM {itg_turma_course} WHERE trm_id = :trm_id";
         $params['trm_id'] = $trm_id;
         $courseid = current($DB->get_records_sql($sql, $params));
 
