@@ -24,8 +24,6 @@ require_once("base.php");
 
 class local_wsmiidle_discipline extends wsmiidle_base {
 
-    const TEACHER_ROLEID = 3;
-
     public static function create_discipline($discipline) {
         global $CFG, $DB;
 
@@ -68,9 +66,7 @@ class local_wsmiidle_discipline extends wsmiidle_base {
         $section['id'] = $DB->insert_record('course_sections', $section);
 
         // Busca as configuracoes do formato do curso
-        $sql = "SELECT * FROM {course_format_options} WHERE courseid = :courseid AND name = 'numsections'";
-        $params['courseid'] = $courseid;
-        $courseformatoptions = current($DB->get_records_sql($sql, $params));
+        $courseformatoptions = $DB->get_record('course_format_options', array('courseid'=>$courseid, 'name' => 'numsections'), '*');
 
         // Atualiza o total de sections do curso
         $courseformatoptions->value = $lastsection + 1;        
@@ -84,15 +80,8 @@ class local_wsmiidle_discipline extends wsmiidle_base {
                 throw new Exception("Não existe usuario mapeado para esse professor . prf_id: " . $discipline->prf_id);
             }
 
-            $courseenrol = self::get_course_enrol($courseid);
-
-            require_once("{$CFG->dirroot}/lib/enrollib.php");
-
-            if (!$enrol_manual = enrol_get_plugin('manual')) {
-                throw new coding_exception('Can not instantiate enrol_manual');
-            }
-
-            $enrol_manual->enrol_user($courseenrol, $userid, self::TEACHER_ROLEID, time());
+            // Matricula o usuario no curso.
+            self::enrol_user_course($userid, $courseid, self::TEACHER_ROLEID);
         }
 
         // Adiciona a tabela de controle os dados da oferta da disciplina e section.
@@ -102,7 +91,7 @@ class local_wsmiidle_discipline extends wsmiidle_base {
         $res = $DB->insert_record('itg_disciplina_section', $data);
 
         // Recria o cache do curso
-        require_once("{$CFG->dirroot}/lib/modinfolib.php");
+        require_once($CFG->libdir . "/modinfolib.php");
         rebuild_course_cache($courseid, true);
 
         // Persiste as operacoes em caso de sucesso.

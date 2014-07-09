@@ -22,6 +22,9 @@
 require_once($CFG->libdir . "/externallib.php");
 
 class wsmiidle_base extends external_api {
+    
+    const TEACHER_ROLEID = 3;
+
     protected static function get_course_by_trm_id($trm_id) {
         global $DB;
         
@@ -81,5 +84,18 @@ class wsmiidle_base extends external_api {
         $enrol = $DB->get_record('enrol', array('courseid'=>$courseid, 'enrol'=>'manual'), '*', MUST_EXIST);
 
         return $enrol;
+    }
+    protected static function enrol_user_course($userid, $courseid, $roleid) {
+        global $CFG;
+
+        $courseenrol = self::get_course_enrol($courseid);
+
+        require_once($CFG->libdir . "/enrollib.php");
+
+        if (!$enrol_manual = enrol_get_plugin('manual')) {
+            throw new coding_exception('Can not instantiate enrol_manual');
+        }
+
+        $enrol_manual->enrol_user($courseenrol, $userid, $roleid, time());
     }
 }
