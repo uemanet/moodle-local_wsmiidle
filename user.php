@@ -19,9 +19,10 @@
  * @copyright  2014 Willian Mano (http://willianmano.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->libdir . "/externallib.php");
 
-class local_wsmiidle_user extends external_api {
+require_once("base.php");
+
+class local_wsmiidle_user extends wsmiidle_base {
 
     public static function create_student($student) {
         global $DB;
@@ -269,38 +270,6 @@ class local_wsmiidle_user extends external_api {
                 'message' => new external_value(PARAM_TEXT, 'Mensagem de retorno da operacao')
             )
         );
-    }
-    protected static function find_user_by_alu_id($alu_id) {
-        global $DB;
-        
-        // Busca o id do usuario apartir do alu_id do aluno.
-        $sql = "SELECT userid FROM {itg_aluno_user} WHERE alu_id = :alu_id";
-        $params['alu_id'] = $alu_id;
-        $userid = current($DB->get_records_sql($sql, $params));
-
-        if($userid) {
-            $userid = $userid->userid;
-        } else {
-            $userid = 0;
-        }
-
-        return $userid;
-    }
-    protected static function find_user_by_prf_id($prf_id) {
-        global $DB;
-        
-        // Busca o id do usuario apartir do prf_id do professor.
-        $sql = "SELECT userid FROM {itg_professor_user} WHERE prf_id = :prf_id";
-        $params['prf_id'] = $prf_id;
-        $userid = current($DB->get_records_sql($sql, $params));
-
-        if($userid) {
-            $userid = $userid->userid;
-        } else {
-            $userid = 0;
-        }
-
-        return $userid;
     }
     protected static function save_student($student){
         global $DB;

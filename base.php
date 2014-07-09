@@ -25,10 +25,7 @@ class wsmiidle_base extends external_api {
     protected static function get_course_by_trm_id($trm_id) {
         global $DB;
         
-        // Busca o id do curso apartir do trm_id da turma.
-        $sql = "SELECT courseid FROM {itg_turma_course} WHERE trm_id = :trm_id";
-        $params['trm_id'] = $trm_id;
-        $courseid = current($DB->get_records_sql($sql, $params));
+        $courseid = $DB->get_record('itg_turma_course', array('trm_id'=>$trm_id), '*');
 
         if($courseid) {
             $courseid = $courseid->courseid;
@@ -37,14 +34,12 @@ class wsmiidle_base extends external_api {
         }
 
         return $courseid;
+
     }
     protected static function get_section_by_ofd_id($ofd_id){
         global $DB;
         
-        // Busca o id da seccao apartir do id da oferta da disciplina
-        $sql = "SELECT sectionid FROM {itg_disciplina_section} WHERE ofd_id = :ofd_id";
-        $params['ofd_id'] = $ofd_id;
-        $sectionid = current($DB->get_records_sql($sql, $params));
+        $sectionid = $DB->get_record('itg_disciplina_section', array('ofd_id'=>$ofd_id), '*');
 
         if($sectionid) {
             $sectionid = $sectionid->sectionid;
@@ -54,13 +49,23 @@ class wsmiidle_base extends external_api {
 
         return $sectionid;
     }
+    protected static function find_user_by_alu_id($alu_id) {
+        global $DB;
+        
+        $userid = $DB->get_record('itg_aluno_user', array('alu_id'=>$alu_id), '*');
+
+        if($userid) {
+            $userid = $userid->userid;
+        } else {
+            $userid = 0;
+        }
+
+        return $userid;
+    }
     protected static function find_user_by_prf_id($prf_id) {
         global $DB;
         
-        // Busca o id do usuario apartir do prf_id do professor.
-        $sql = "SELECT userid FROM {itg_professor_user} WHERE prf_id = :prf_id";
-        $params['prf_id'] = $prf_id;
-        $userid = current($DB->get_records_sql($sql, $params));
+        $userid = $DB->get_record('itg_professor_user', array('prf_id'=>$prf_id), '*');
 
         if($userid) {
             $userid = $userid->userid;

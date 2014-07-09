@@ -19,9 +19,10 @@
  * @copyright  2014 Willian Mano (http://willianmano.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->libdir . "/externallib.php");
 
-class local_wsmiidle_course extends external_api {
+require_once("base.php");
+
+class local_wsmiidle_course extends wsmiidle_base {
 
     public static function create_course($course) {
         global $CFG, $DB;
@@ -146,8 +147,7 @@ class local_wsmiidle_course extends external_api {
                         'trm_id' => new external_value(PARAM_INT, 'Id da turma no gestor'),
                         'category' => new external_value(PARAM_INT, 'Categoria do curso'),
                         'shortname' => new external_value(PARAM_TEXT, 'Nome curto do curso'),
-                        'fullname' => new external_value(PARAM_TEXT, 'Nome completo do curso'),
-                        'numsections' => new external_value(PARAM_INT, 'Quantidade de sections')
+                        'fullname' => new external_value(PARAM_TEXT, 'Nome completo do curso')
                     )
                 )
             )
@@ -161,21 +161,5 @@ class local_wsmiidle_course extends external_api {
                 'message' => new external_value(PARAM_TEXT, 'Operation return message')
             )
         );
-    }
-    protected static function get_course_by_trm_id($trm_id) {
-        global $DB;
-        
-        // Busca o id do curso apartir do trm_id da turma.
-        $sql = "SELECT courseid FROM {itg_turma_course} WHERE trm_id = :trm_id";
-        $params['trm_id'] = $trm_id;
-        $courseid = current($DB->get_records_sql($sql, $params));
-
-        if($courseid) {
-            $courseid = $courseid->courseid;
-        } else {
-            $courseid = 0;
-        }
-
-        return $courseid;
     }
 }
