@@ -33,9 +33,9 @@ class local_wsmiidle_discipline extends wsmiidle_base {
         $discipline = (object)$discipline;
 
         // Busca o id da seccao apartir do id da oferta da disciplina.
-        $sectionid = self::get_section_by_ofd_id($discipline->ofd_id);
+        $section = self::get_section_by_ofd_id($discipline->ofd_id);
         // Dispara uma excessao caso ja tenha um mapeamento entre a oferta da disciplina e uma section.
-        if($sectionid) {
+        if($section) {
             throw new Exception("Já existe uma section mapeada para essa disciplina oferecida. ofd_id: " . $discipline->ofd_id);
         }
 
@@ -127,12 +127,59 @@ class local_wsmiidle_discipline extends wsmiidle_base {
         );
     }
     public static function update_discipline($discipline) {
+        global $DB;
 
         //validate parameters
         $params = self::validate_parameters(self::update_discipline_parameters(), array('discipline' => $discipline));
 
+        $discipline = (object)$discipline;
+
+        // Busca o id da seccao apartir do id da oferta da disciplina.
+        $section = self::get_section_by_ofd_id($discipline->ofd_id);
+        // Dispara uma excessao caso ja tenha um mapeamento entre a oferta da disciplina e uma section.
+        if(!$section) {
+            throw new Exception("Não existe uma section mapeada para essa disciplina oferecida. ofd_id: " . $discipline->ofd_id);
+        }
+
+        // Busca o id do curso apartir do trm_id da turma.
+        $courseid = self::get_course_by_trm_id($discipline->trm_id);
+        // Dispara uma excessao se essa turma ja estiver mapeado para um curso.
+        if(!$courseid) {
+            throw new Exception("Não existe curso mapeado para a turma onde essa disciplina foi oferecida. trm_id: " . $discipline->trm_id);
+        }
+
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+
+        if($discipline->prf_id != 0) {
+            if($discipline->prf_id != $section->prf_id) {
+                // Remover professor antigo
+                $oldteacherid = self::find_user_by_prf_id($section->prf_id);
+                self::unenrol_user_course($oldteacherid, $courseid);
+
+                // adiciona novo professor
+                $newteacherid = self::find_user_by_prf_id($discipline->prf_id);
+                self::enrol_user_course($newteacherid, $courseid, self::TEACHER_ROLEID);
+
+                $section->prf_id = $discipline->prf_id;
+            }
+        }
+        // Professor foi removido da disciplina
+        else if($discipline->prf_id == 0 && $section->prf_id != 0) {
+            // Remover professor antigo
+            $oldteacherid = self::find_user_by_prf_id($section->prf_id);
+            self::unenrol_user_course($oldteacherid, $courseid);
+
+            $section->prf_id = 0;
+        }
+
+        $DB->update_record('itg_disciplina_section', $section);
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
+
         return array(
-                'id' => 0,
+                'id' => $section->sectionid,
                 'status' => 'success',
                 'message' => 'Disciplina alterada com sucesso'
             );
@@ -143,8 +190,8 @@ class local_wsmiidle_discipline extends wsmiidle_base {
                 'discipline' => new external_single_structure(
                     array(
                         'ofd_id' => new external_value(PARAM_INT, 'Id da disciplina oferecida no gestor'),
-                        'prf_id' => new external_value(PARAM_INT, 'Id do professor da disciplina'),
-                        'name' => new external_value(PARAM_TEXT, 'Nome da disciplina')
+                        'trm_id' => new external_value(PARAM_INT, 'Id da turma que a disciplina foi oferecida'),
+                        'prf_id' => new external_value(PARAM_INT, 'Id do professor da disciplina')
                     )
                 )
             )

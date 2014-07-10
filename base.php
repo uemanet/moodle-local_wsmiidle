@@ -42,15 +42,9 @@ class wsmiidle_base extends external_api {
     protected static function get_section_by_ofd_id($ofd_id){
         global $DB;
         
-        $sectionid = $DB->get_record('itg_disciplina_section', array('ofd_id'=>$ofd_id), '*');
+        $section = $DB->get_record('itg_disciplina_section', array('ofd_id'=>$ofd_id), '*');
 
-        if($sectionid) {
-            $sectionid = $sectionid->sectionid;
-        } else {
-            $sectionid = 0;
-        }
-
-        return $sectionid;
+        return $section;
     }
     protected static function find_user_by_alu_id($alu_id) {
         global $DB;
@@ -97,5 +91,18 @@ class wsmiidle_base extends external_api {
         }
 
         $enrol_manual->enrol_user($courseenrol, $userid, $roleid, time());
+    }
+    protected static function unenrol_user_course($userid, $courseid) {
+        global $CFG;
+
+        $courseenrol = self::get_course_enrol($courseid);
+
+        require_once($CFG->libdir . "/enrollib.php");
+
+        if (!$enrol_manual = enrol_get_plugin('manual')) {
+            throw new coding_exception('Can not instantiate enrol_manual');
+        }
+
+        $enrol_manual->unenrol_user($courseenrol, $userid);
     }
 }
