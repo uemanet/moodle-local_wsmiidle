@@ -99,6 +99,13 @@ $functions = array(
                 'classpath'   => 'local/wsmiidle/enrol.php',
                 'description' => 'Enrol a user in a discipline.',
                 'type'        => 'write',
+        ),
+        'local_wsmiidle_unenrol_user_discipline' => array(
+                'classname'   => 'local_wsmiidle_enrol',
+                'methodname'  => 'unenrol_user_discipline',
+                'classpath'   => 'local/wsmiidle/enrol.php',
+                'description' => 'Unenrol a user in a discipline.',
+                'type'        => 'write',
         )
 );
 
@@ -116,7 +123,8 @@ $services = array(
                                 'local_wsmiidle_create_discipline',
                                 'local_wsmiidle_update_discipline',
                                 'local_wsmiidle_enrol_user_course',
-                                'local_wsmiidle_enrol_user_discipline'
+                                'local_wsmiidle_enrol_user_discipline',
+                                'local_wsmiidle_unenrol_user_discipline'
                 ),
                 'restrictedusers' => 1,
                 'enabled'=>1,

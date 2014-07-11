@@ -37,7 +37,7 @@ class local_wsmiidle_user extends wsmiidle_base {
         $transaction = $DB->start_delegated_transaction();
 
         // Busca o id do usuario apartir do alu_id do aluno.
-        $userid = self::find_user_by_alu_id($student->alu_id);
+        $userid = self::get_user_by_alu_id($student->alu_id);
 
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if($userid) {
@@ -102,7 +102,7 @@ class local_wsmiidle_user extends wsmiidle_base {
         $transaction = $DB->start_delegated_transaction();
 
         // Busca o id do usuario apartir do alu_id do aluno.
-        $userid = self::find_user_by_alu_id($student->alu_id);
+        $userid = self::get_user_by_alu_id($student->alu_id);
 
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if(!$userid) {
@@ -161,7 +161,7 @@ class local_wsmiidle_user extends wsmiidle_base {
         $transaction = $DB->start_delegated_transaction();
 
         // Busca o id do usuario apartir do alu_id do aluno.
-        $userid = self::find_user_by_prf_id($teacher->prf_id);
+        $userid = self::get_user_by_prf_id($teacher->prf_id);
 
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if($userid) {
@@ -226,7 +226,7 @@ class local_wsmiidle_user extends wsmiidle_base {
         $transaction = $DB->start_delegated_transaction();
 
         // Busca o id do usuario apartir do prf_id do aluno.
-        $userid = self::find_user_by_prf_id($teacher->prf_id);
+        $userid = self::get_user_by_prf_id($teacher->prf_id);
 
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if(!$userid) {

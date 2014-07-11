@@ -47,7 +47,7 @@ class wsmiidle_base extends external_api {
 
         return $section;
     }
-    protected static function find_user_by_alu_id($alu_id) {
+    protected static function get_user_by_alu_id($alu_id) {
         global $DB;
         
         $userid = $DB->get_record('itg_aluno_user', array('alu_id'=>$alu_id), '*');
@@ -60,7 +60,7 @@ class wsmiidle_base extends external_api {
 
         return $userid;
     }
-    protected static function find_user_by_prf_id($prf_id) {
+    protected static function get_user_by_prf_id($prf_id) {
         global $DB;
         
         $userid = $DB->get_record('itg_professor_user', array('prf_id'=>$prf_id), '*');
@@ -105,5 +105,12 @@ class wsmiidle_base extends external_api {
         }
 
         $enrol_manual->unenrol_user($courseenrol, $userid);
+    }
+    protected static function get_user_discipline($userid, $sectionid) {
+        global $DB;
+        
+        $userdiscipline = $DB->get_record('itg_user_discipline', array('userid'=>$userid, 'sectionid'=>$sectionid), '*');
+
+        return $userdiscipline;
     }
 }
