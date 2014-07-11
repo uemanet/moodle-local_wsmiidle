@@ -45,7 +45,7 @@ class local_wsmiidle_enrol extends wsmiidle_base {
             throw new Exception("Nenhum usuario esta mapeado para o aluno com alu_id: " . $enrol->alu_id);
         }
 
-        self::enrol_user_course($userid, $courseid, self::STUDENT_ROLEID);
+        self::enrol_user_in_moodle_course($userid, $courseid, self::STUDENT_ROLEID);
 
         return array(
             'status' => 'success',
@@ -153,7 +153,7 @@ class local_wsmiidle_enrol extends wsmiidle_base {
         $unenrol = (object)$unenrol;
 
         // Verifica se a matricula na disciplina existe
-        $userdiscipline = $DB->get_record('itg_user_discipline', array('mof_id'=>$unenrol->mof_id, '*');
+        $userdiscipline = $DB->get_record('itg_user_discipline', array('mof_id'=>$unenrol->mof_id, '*'));
         if(!$userdiscipline) {
             throw new Exception("Nao exsite mapeamento para essa matricula na oferta disciplina. mof_id: " . $unenrol->mof_id);
         }

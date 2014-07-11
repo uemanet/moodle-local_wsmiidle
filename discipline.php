@@ -81,7 +81,7 @@ class local_wsmiidle_discipline extends wsmiidle_base {
             }
 
             // Matricula o usuario no curso.
-            self::enrol_user_course($userid, $courseid, self::TEACHER_ROLEID);
+            self::enrol_user_in_moodle_course($userid, $courseid, self::TEACHER_ROLEID);
         }
 
         // Adiciona a tabela de controle os dados da oferta da disciplina e section.
@@ -160,7 +160,7 @@ class local_wsmiidle_discipline extends wsmiidle_base {
                 }
                 // adiciona novo professor
                 $newteacherid = self::find_user_by_prf_id($discipline->prf_id);
-                self::enrol_user_course($newteacherid, $courseid, self::TEACHER_ROLEID);
+                self::enrol_user_in_moodle_course($newteacherid, $courseid, self::TEACHER_ROLEID);
 
                 $section->prf_id = $discipline->prf_id;
             }

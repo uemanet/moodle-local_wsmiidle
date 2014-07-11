@@ -80,7 +80,7 @@ class wsmiidle_base extends external_api {
 
         return $enrol;
     }
-    protected static function enrol_user_course($userid, $courseid, $roleid) {
+    protected static function enrol_user_in_moodle_course($userid, $courseid, $roleid) {
         global $CFG;
 
         $courseenrol = self::get_course_enrol($courseid);
