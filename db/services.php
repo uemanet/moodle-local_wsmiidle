@@ -86,18 +86,18 @@ $functions = array(
                 'description' => 'Update a discipline.',
                 'type'        => 'write',
         ),
-        'local_wsmiidle_enroll_user_course' => array(
-                'classname'   => 'local_wsmiidle_enroll',
-                'methodname'  => 'enroll_user_course',
-                'classpath'   => 'local/wsmiidle/enroll.php',
-                'description' => 'Enroll a user in a course.',
+        'local_wsmiidle_enrol_user_course' => array(
+                'classname'   => 'local_wsmiidle_enrol',
+                'methodname'  => 'enrol_user_course',
+                'classpath'   => 'local/wsmiidle/enrol.php',
+                'description' => 'Enrol a user in a course.',
                 'type'        => 'write',
         ),
-        'local_wsmiidle_enroll_user_discipline' => array(
-                'classname'   => 'local_wsmiidle_enroll',
-                'methodname'  => 'enroll_user_discipline',
-                'classpath'   => 'local/wsmiidle/enroll.php',
-                'description' => 'Enroll a user in a discipline.',
+        'local_wsmiidle_enrol_user_discipline' => array(
+                'classname'   => 'local_wsmiidle_enrol',
+                'methodname'  => 'enrol_user_discipline',
+                'classpath'   => 'local/wsmiidle/enrol.php',
+                'description' => 'Enrol a user in a discipline.',
                 'type'        => 'write',
         )
 );
@@ -115,8 +115,8 @@ $services = array(
                                 'local_wsmiidle_update_teacher',
                                 'local_wsmiidle_create_discipline',
                                 'local_wsmiidle_update_discipline',
-                                'local_wsmiidle_enroll_user_course',
-                                'local_wsmiidle_enroll_user_discipline'
+                                'local_wsmiidle_enrol_user_course',
+                                'local_wsmiidle_enrol_user_discipline'
                 ),
                 'restrictedusers' => 1,
                 'enabled'=>1,

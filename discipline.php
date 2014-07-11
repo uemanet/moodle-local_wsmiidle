@@ -153,10 +153,11 @@ class local_wsmiidle_discipline extends wsmiidle_base {
 
         if($discipline->prf_id != 0) {
             if($discipline->prf_id != $section->prf_id) {
-                // Remover professor antigo
-                $oldteacherid = self::find_user_by_prf_id($section->prf_id);
-                self::unenrol_user_course($oldteacherid, $courseid);
-
+                if($section->prf_id != 0) {
+                    // Remover professor antigo
+                    $oldteacherid = self::find_user_by_prf_id($section->prf_id);
+                    self::unenrol_user_course($oldteacherid, $courseid);
+                }
                 // adiciona novo professor
                 $newteacherid = self::find_user_by_prf_id($discipline->prf_id);
                 self::enrol_user_course($newteacherid, $courseid, self::TEACHER_ROLEID);

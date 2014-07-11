@@ -19,35 +19,54 @@
  * @copyright  2014 Willian Mano (http://willianmano.net)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-require_once($CFG->libdir . "/externallib.php");
 
-class local_wsmiidle_enroll extends external_api {
+require_once("base.php");
 
-    public static function enroll_user_course($eroll) {
+class local_wsmiidle_enrol extends wsmiidle_base {
+
+    public static function enrol_user_course($enrol) {
 
         //validate parameters
-        $params = self::validate_parameters(self::enroll_user_course_parameters(), array('eroll' => $eroll));
+        $params = self::validate_parameters(self::enrol_user_course_parameters(), array('enrol' => $enrol));
+
+        $enrol = (object)$enrol;
+
+        // Busca o id do curso apartir do trm_id da turma.
+        $courseid = self::get_course_by_trm_id($enrol->trm_id);
+        // Dispara uma excessao se essa turma nao estiver mapeada para um curso.
+        if(!$courseid) {
+            throw new Exception("Não existe curso mapeado para a turma que esse aluno foi matriculado. trm_id: " . $enrol->trm_id);
+        }
+
+        // Busca o id do usuario apartir do alu_id do aluno.
+        $userid = self::find_user_by_alu_id($enrol->alu_id);
+        // Dispara uma excessao se esse aluno nao estiver mapeado para um usuario.
+        if(!$userid) {
+            throw new Exception("Nenhum usuario esta mapeado para o aluno com alu_id: " . $enrol->alu_id);
+        }
+
+        self::enrol_user_course($userid, $courseid, self::STUDENT_ROLEID);
 
         return array(
-            'id' => 0,
             'status' => 'success',
             'message' => 'Aluno matriculado no curso'
         );
     }
-    public static function enroll_user_course_parameters() {
+    public static function enrol_user_course_parameters() {
         return new external_function_parameters(
             array(
-                'enroll' => new external_single_structure(
+                'enrol' => new external_single_structure(
                     array(
                         'mat_id' => new external_value(PARAM_INT, 'Id da matricula na turma no gestor'),
                         'trm_id' => new external_value(PARAM_INT, 'Id da turma'),
+                        'alu_id' => new external_value(PARAM_INT, 'Id do aluno'),
                         'mat_codigo' => new external_value(PARAM_TEXT, 'Codigo da matricula'),
                     )
                 )
             )
         );
     }
-    public static function enroll_user_course_returns() {
+    public static function enrol_user_course_returns() {
         return new external_single_structure(
             array(
                 'id' => new external_value(PARAM_INT, 'Id da matricula criada'),
@@ -57,10 +76,10 @@ class local_wsmiidle_enroll extends external_api {
         );
     }
 
-    public static function enroll_user_discipline($eroll) {
+    public static function enrol_user_discipline($enrol) {
 
         //validate parameters
-        $params = self::validate_parameters(self::enroll_user_discipline_parameters(), array('eroll' => $eroll));
+        $params = self::validate_parameters(self::enrol_user_discipline_parameters(), array('enrol' => $enrol));
 
         return array(
             'id' => 0,
@@ -68,10 +87,10 @@ class local_wsmiidle_enroll extends external_api {
             'message' => 'Aluno matriculado na disciplina'
         );
     }
-    public static function enroll_user_discipline_parameters() {
+    public static function enrol_user_discipline_parameters() {
         return new external_function_parameters(
             array(
-                'enroll' => new external_single_structure(
+                'enrol' => new external_single_structure(
                     array(
                         'mof_id' => new external_value(PARAM_INT, 'Id da matricula na disciplina no gestor'),
                         'ofd_id' => new external_value(PARAM_INT, 'Id da disciplina oferecida'),
@@ -81,7 +100,7 @@ class local_wsmiidle_enroll extends external_api {
             )
         );
     }
-    public static function enroll_user_discipline_returns() {
+    public static function enrol_user_discipline_returns() {
         return new external_single_structure(
             array(
                 'id' => new external_value(PARAM_INT, 'Id da matricula criada'),
