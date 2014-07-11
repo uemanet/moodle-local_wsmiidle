@@ -104,11 +104,17 @@ class local_wsmiidle_enrol extends wsmiidle_base {
             throw new Exception("O aluno ja esta matriculado para essa disciplina. ofd_id: " . $enrol->ofd_id);
         }
 
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+
         $data['mof_id'] = $enrol->mof_id;
         $data['userid'] = $userid;
         $data['sectionid'] = $section->sectionid;
 
         $res = $DB->insert_record('itg_user_discipline', $data);
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
 
         return array(
             'id' => $res,
@@ -152,7 +158,13 @@ class local_wsmiidle_enrol extends wsmiidle_base {
             throw new Exception("Nao exsite mapeamento para essa matricula na oferta disciplina. mof_id: " . $unenrol->mof_id);
         }
 
+        // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+        $transaction = $DB->start_delegated_transaction();
+        
         $DB->delete_records('itg_user_discipline', array('id'=>$userdiscipline->id));
+
+        // Persiste as operacoes em caso de sucesso.
+        $transaction->allow_commit();
 
         return array(
             'id' => $userdiscipline->id,
