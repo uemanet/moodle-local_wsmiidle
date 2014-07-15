@@ -41,7 +41,11 @@ class local_wsmiidle_user extends wsmiidle_base {
 
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if($userid) {
-            throw new Exception("Essa aluno ja esta mapeado com o usuario de id: " . $userid);
+            return array(
+                'id' => $userid,
+                'status' => 'warning',
+                'message' => 'Aluno ja mapeado para o usuario de id: ' . $userid
+            );
         }
         
         // Cria o usuario usando a biblioteca do proprio moodle.
@@ -165,7 +169,11 @@ class local_wsmiidle_user extends wsmiidle_base {
 
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if($userid) {
-            throw new Exception("Essa professor ja esta mapeado com o usuario de id: " . $userid);
+            return array(
+                'id' => $userid,
+                'status' => 'warning',
+                'message' => 'Professor ja mapeado para o usuario de id: ' . $userid
+            );
         }
         
         // Cria o usuario usando a biblioteca do proprio moodle.
