@@ -73,7 +73,7 @@ class local_wsmiidle_discipline extends wsmiidle_base {
         $DB->update_record('course_format_options', $courseformatoptions);
 
         if ($discipline->prf_id) {
-            $userid = self::find_user_by_prf_id($discipline->prf_id);
+            $userid = self::get_user_by_prf_id($discipline->prf_id);
 
             // Dispara uma excessao caso o professor nao esteja mapeado ainda
             if(!$userid) {
@@ -155,11 +155,11 @@ class local_wsmiidle_discipline extends wsmiidle_base {
             if($discipline->prf_id != $section->prf_id) {
                 if($section->prf_id != 0) {
                     // Remover professor antigo
-                    $oldteacherid = self::find_user_by_prf_id($section->prf_id);
+                    $oldteacherid = self::get_user_by_prf_id($section->prf_id);
                     self::unenrol_user_course($oldteacherid, $courseid);
                 }
                 // adiciona novo professor
-                $newteacherid = self::find_user_by_prf_id($discipline->prf_id);
+                $newteacherid = self::get_user_by_prf_id($discipline->prf_id);
                 self::enrol_user_in_moodle_course($newteacherid, $courseid, self::TEACHER_ROLEID);
 
                 $section->prf_id = $discipline->prf_id;
@@ -168,7 +168,7 @@ class local_wsmiidle_discipline extends wsmiidle_base {
         // Professor foi removido da disciplina
         else if($discipline->prf_id == 0 && $section->prf_id != 0) {
             // Remover professor antigo
-            $oldteacherid = self::find_user_by_prf_id($section->prf_id);
+            $oldteacherid = self::get_user_by_prf_id($section->prf_id);
             self::unenrol_user_course($oldteacherid, $courseid);
 
             $section->prf_id = 0;

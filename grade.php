@@ -23,58 +23,6 @@
 require_once("base.php");
 
 class local_wsmiidle_grade extends wsmiidle_base {
-    public static function get_user_grade_by_itemid($usergrade) {
-        global $DB;
-
-        //validate parameters
-        $params = self::validate_parameters(self::get_user_grade_by_itemid_parameters(), array('usergrade' => $usergrade));
-
-        $usergrade = (object)$usergrade;
-
-        // Busca o id do usuario apartir do alu_id do aluno.
-        $userid = self::get_user_by_alu_id($usergrade->alu_id);
-
-        // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
-        if(!$userid) {
-            throw new Exception("Nenhum usuario esta mapeado para o aluno com alu_id: " . $usergrade->alu_id);
-        }
-
-        $grade = $DB->get_record('grade_grades', array('itemid'=>$usergrade->itemid, 'userid'=>$userid), '*');
-
-        if($grade->rawscaleid) {
-            $finalgrade = self::get_grade_by_scale($grade->rawscaleid, $grade->finalgrade);
-        } else {
-            $finalgrade = $grade->finalgrade;
-        }
-
-        return array(
-            'grade' => $finalgrade,
-            'status' => 'success',
-            'message' => 'Nota recebida com sucesso'
-        );
-    }
-    public static function get_user_grade_by_itemid_parameters() {
-        return new external_function_parameters(
-            array(
-                'usergrade' => new external_single_structure(
-                    array(
-                        'alu_id' => new external_value(PARAM_INT, 'Id do aluno'),
-                        'itemid' => new external_value(PARAM_INT, 'Id do item de nota da atividade')
-                    )
-                )
-            )
-        );
-    }
-    public static function get_user_grade_by_itemid_returns() {
-        return new external_single_structure(
-            array(
-                'grade' => new external_value(PARAM_FLOAT, 'Nota do aluno na atividade'),
-                'status' => new external_value(PARAM_TEXT, 'Status da operacao'),
-                'message' => new external_value(PARAM_TEXT, 'Mensagem de retorno da operacao')
-            )
-        );
-    }
-
     public static function get_grades_batch($grades) {
         global $DB;
 
@@ -83,13 +31,30 @@ class local_wsmiidle_grade extends wsmiidle_base {
 
         $grades = $grades;
 
-        return array(
-            'alu_id' => $grades['alu_id'],
-            'alu_id' => $grades['itemid'],
-            'grade' => 9,
-            'status' => 'success',
-            'message' => 'Nota recebida com sucesso'
-        );
+        foreach ($grades as $g => $grade) {
+            // Busca o id do usuario apartir do alu_id do aluno.
+            $userid = self::get_user_by_alu_id($grade['alu_id']);
+
+            if($userid) {
+                $gradeRetorno[] = array(
+                    'alu_id' => $grade['alu_id'],
+                    'itemid' => $grade['itemid'],
+                    'grade' => self::get_grade_by_itemid($grade['itemid'], $userid),
+                    'status' => 'success',
+                    'message' => 'Nota recebida com sucesso'
+                );
+            } else {
+                $gradeRetorno[] = array(
+                    'alu_id' => $grade['alu_id'],
+                    'itemid' => $grade['itemid'],
+                    'grade' => 0,
+                    'status' => 'warning',
+                    'message' => 'Aluno nao mapeado a um usuario do moodle'
+                );
+            }
+        }
+
+        return $gradeRetorno;
     }
     public static function get_grades_batch_parameters() {
         return new external_function_parameters(
@@ -117,6 +82,22 @@ class local_wsmiidle_grade extends wsmiidle_base {
                 )
             )
         );
+    }
+    protected static function get_grade_by_itemid($itemid, $userid){
+        global $DB;
+
+        $grade = $DB->get_record('grade_grades', array('itemid'=>$itemid, 'userid'=>$userid), '*');
+        $finalgrade = 0;
+
+        if($grade) {
+            if($grade->rawscaleid) {
+                $finalgrade = self::get_grade_by_scale($grade->rawscaleid, $grade->finalgrade);
+            } else {
+                $finalgrade = $grade->finalgrade;
+            }
+        }
+
+        return $finalgrade;
     }
     protected static function get_grade_by_scale($scaleid, $grade) {
         global $DB;
