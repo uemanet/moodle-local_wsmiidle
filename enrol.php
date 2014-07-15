@@ -39,7 +39,7 @@ class local_wsmiidle_enrol extends wsmiidle_base {
         }
 
         // Busca o id do usuario apartir do alu_id do aluno.
-        $userid = self::find_user_by_alu_id($enrol->alu_id);
+        $userid = self::get_user_by_alu_id($enrol->alu_id);
         // Dispara uma excessao se esse aluno nao estiver mapeado para um usuario.
         if(!$userid) {
             throw new Exception("Nenhum usuario esta mapeado para o aluno com alu_id: " . $enrol->alu_id);
@@ -48,6 +48,7 @@ class local_wsmiidle_enrol extends wsmiidle_base {
         self::enrol_user_in_moodle_course($userid, $courseid, self::STUDENT_ROLEID);
 
         return array(
+            'id' => 0,
             'status' => 'success',
             'message' => 'Aluno matriculado no curso'
         );
@@ -92,7 +93,7 @@ class local_wsmiidle_enrol extends wsmiidle_base {
         }
 
         // Busca o id do usuario apartir do alu_id do aluno.
-        $userid = self::find_user_by_alu_id($enrol->alu_id);
+        $userid = self::get_user_by_alu_id($enrol->alu_id);
         // Dispara uma excessao se esse aluno nao estiver mapeado para um usuario.
         if(!$userid) {
             throw new Exception("Nenhum usuario esta mapeado para o aluno com alu_id: " . $enrol->alu_id);

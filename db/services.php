@@ -106,6 +106,13 @@ $functions = array(
                 'classpath'   => 'local/wsmiidle/enrol.php',
                 'description' => 'Unenrol a user in a discipline.',
                 'type'        => 'write',
+        ),
+        'local_wsmiidle_get_user_grade_by_itemid' => array(
+                'classname'   => 'local_wsmiidle_grade',
+                'methodname'  => 'get_user_grade_by_itemid',
+                'classpath'   => 'local/wsmiidle/grade.php',
+                'description' => 'Return final grade of a student in an itemid.',
+                'type'        => 'read',
         )
 );
 
@@ -124,7 +131,8 @@ $services = array(
                                 'local_wsmiidle_update_discipline',
                                 'local_wsmiidle_enrol_user_course',
                                 'local_wsmiidle_enrol_user_discipline',
-                                'local_wsmiidle_unenrol_user_discipline'
+                                'local_wsmiidle_unenrol_user_discipline',
+                                'local_wsmiidle_get_user_grade_by_itemid'
                 ),
                 'restrictedusers' => 1,
                 'enabled'=>1,
