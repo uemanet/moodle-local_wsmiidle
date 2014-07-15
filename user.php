@@ -42,7 +42,7 @@ class local_wsmiidle_user extends wsmiidle_base {
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if($userid) {
             return array(
-                'id' => $userid,
+                'id' => $student->alu_id,
                 'status' => 'warning',
                 'message' => 'Aluno ja mapeado para o usuario de id: ' . $userid
             );
@@ -170,7 +170,7 @@ class local_wsmiidle_user extends wsmiidle_base {
         // Dispara uma excessao se esse aluno ja estiver mapeado para um usuario.
         if($userid) {
             return array(
-                'id' => $userid,
+                'id' => $teacher->prf_id,
                 'status' => 'warning',
                 'message' => 'Professor ja mapeado para o usuario de id: ' . $userid
             );

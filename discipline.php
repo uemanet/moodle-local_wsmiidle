@@ -192,7 +192,8 @@ class local_wsmiidle_discipline extends wsmiidle_base {
                     array(
                         'ofd_id' => new external_value(PARAM_INT, 'Id da disciplina oferecida no gestor'),
                         'trm_id' => new external_value(PARAM_INT, 'Id da turma que a disciplina foi oferecida'),
-                        'prf_id' => new external_value(PARAM_INT, 'Id do professor da disciplina')
+                        'prf_id' => new external_value(PARAM_INT, 'Id do professor da disciplina'),
+                        'name' => new external_value(PARAM_TEXT, 'Nome da disciplina')
                     )
                 )
             )

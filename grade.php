@@ -74,14 +74,59 @@ class local_wsmiidle_grade extends wsmiidle_base {
             )
         );
     }
+
+    public static function get_grades_batch($grades) {
+        global $DB;
+
+        //validate parameters
+        $params = self::validate_parameters(self::get_grades_batch_parameters(), array('grades' => $grades));
+
+        $grades = $grades;
+
+        return array(
+            'alu_id' => $grades['alu_id'],
+            'alu_id' => $grades['itemid'],
+            'grade' => 9,
+            'status' => 'success',
+            'message' => 'Nota recebida com sucesso'
+        );
+    }
+    public static function get_grades_batch_parameters() {
+        return new external_function_parameters(
+            array(
+                'grades' => new external_multiple_structure(
+                    new external_single_structure(
+                        array(
+                            'alu_id' => new external_value(PARAM_INT, 'Id do aluno'),
+                            'itemid' => new external_value(PARAM_INT, 'Id do item de nota da atividade')
+                        )
+                    )
+                )
+            )
+        );
+    }
+    public static function get_grades_batch_returns() {
+        return new external_multiple_structure(
+            new external_single_structure(
+                array(
+                    'alu_id'       => new external_value(PARAM_INT, 'Id do aluno no academico'),
+                    'itemid' => new external_value(PARAM_INT, 'Id do item de nota'),
+                    'grade' => new external_value(PARAM_FLOAT, 'Nota do aluno no item'),
+                    'status' => new external_value(PARAM_TEXT, 'Status da operacao'),
+                    'message' => new external_value(PARAM_TEXT, 'Mensagem da operacao')
+                )
+            )
+        );
+    }
     protected static function get_grade_by_scale($scaleid, $grade) {
         global $DB;
 
         $scale = $DB->get_record('scale', array('id'=>$scaleid), '*');
 
         $scale = $scale->scale;
+        $scale = str_replace(' ', '', $scale);
 
-        $scale_arr = explode(', ', $scale);
+        $scale_arr = explode(',', $scale);
 
         $grade = (int)$grade - 1;
 
