@@ -154,7 +154,7 @@ class local_wsmiidle_enrol extends wsmiidle_base {
         $unenrol = (object)$unenrol;
 
         // Verifica se a matricula na disciplina existe
-        $userdiscipline = $DB->get_record('itg_user_discipline', array('mof_id'=>$unenrol->mof_id, '*'));
+        $userdiscipline = $DB->get_record('itg_user_discipline', array('mof_id'=>$unenrol->mof_id), '*');
         if(!$userdiscipline) {
             throw new Exception("Nao exsite mapeamento para essa matricula na oferta disciplina. mof_id: " . $unenrol->mof_id);
         }
