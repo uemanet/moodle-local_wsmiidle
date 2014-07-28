@@ -113,10 +113,10 @@ class wsmiidle_base extends external_api {
 
         return $userdiscipline;
     }
-    private static function get_group_by_grp_id($grp_id) {
+    protected static function get_group_by_grp_id($grp_id) {
         global $DB;
         
-        $group = $DB->get_record('itg_group_group', array('grp_id'=>$grp_id), '*');
+        $group = $DB->get_record('itg_grupo_group', array('grp_id'=>$grp_id), '*');
 
         return $group;
     }

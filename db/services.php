@@ -113,6 +113,13 @@ $functions = array(
                 'classpath'   => 'local/wsmiidle/grade.php',
                 'description' => 'Return final grade of a list of students.',
                 'type'        => 'read',
+        ),
+        'local_wsmiidle_create_group' => array(
+                'classname'   => 'local_wsmiidle_group',
+                'methodname'  => 'create_group',
+                'classpath'   => 'local/wsmiidle/group.php',
+                'description' => 'Creates a new group into a course.',
+                'type'        => 'write',
         )
 );
 
@@ -132,7 +139,8 @@ $services = array(
                                 'local_wsmiidle_enrol_user_course',
                                 'local_wsmiidle_enrol_user_discipline',
                                 'local_wsmiidle_unenrol_user_discipline',
-                                'local_wsmiidle_get_grades_batch'
+                                'local_wsmiidle_get_grades_batch',
+                                'local_wsmiidle_create_group'
                 ),
                 'restrictedusers' => 1,
                 'enabled'=>1,

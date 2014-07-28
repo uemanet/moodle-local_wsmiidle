@@ -43,10 +43,10 @@ class local_wsmiidle_group extends wsmiidle_base {
             throw new Exception("Nenhum curso mapeado com a turma com trm_id: " . $group->trm_id);
         }
 
-        $groupid = get_group_by_name($courseid, $group->name);
+        $groupbyname = self::get_group_by_name($courseid, $group->name);
 
         // Dispara uma excessao caso ja exista um grupo com o mesmo nome no mesmo curso
-        if($groupid) {
+        if($groupbyname) {
             throw new Exception("ja existe um grupo com o mesmo nome nessa turma trm_id: " . $group->trm_id);
         }
 
@@ -55,21 +55,30 @@ class local_wsmiidle_group extends wsmiidle_base {
         $groupdata['description'] = $group->description;
         $groupdata['descriptionformat'] = 1;
         $groupdata['timecreated'] = time();
-        $groupdata['timemodified'] = $group['timecreated'];
+        $groupdata['timemodified'] = $groupdata['timecreated'];
 
-        $result = $DB->insert_record('group', $groupdata);
+        $resultid = $DB->insert_record('groups', $groupdata);
 
         // Caso o curso tenha sido criado adiciona a tabela de controle os dados dos curso e da turma.
-        if($result->id) {
+        if($resultid) {
             $data['trm_id'] = $group->trm_id;
             $data['grp_id'] = $group->grp_id;
-            $data['groupid'] = $result->id;
+            $data['groupid'] = $resultid;
 
-            $res = $DB->insert_record('itg_group_group', $data);
+            $res = $DB->insert_record('itg_grupo_group', $data);
+
+            // Busca as configuracoes do curso
+            $courseoptions = $DB->get_record('course', array('id'=>$courseid), '*');
+
+            // Altera o formato de grupos do curso
+            $courseoptions->groupmode = 1;
+            $courseoptions->groupmodeforce = 1;
+            $DB->update_record('course', $courseoptions);
 
             // Prepara o array de retorno.
+            $returndata = null;
             if($res) {
-                $returndata['id'] = $result->id;
+                $returndata['id'] = $resultid;
                 $returndata['status'] = 'success';
                 $returndata['message'] = 'Grupo criado com sucesso';
             } else {

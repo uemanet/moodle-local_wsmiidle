@@ -48,9 +48,12 @@ class local_wsmiidle_enrol extends wsmiidle_base {
 
         if($enrol->grp_id) {
 
-            $group = get_group_by_grp_id($enrol->grp_id);
+            $group = self::get_group_by_grp_id($enrol->grp_id);
 
-            if($group) {
+            // Dispara uma excessao se esse grupo nao estiver mapeado.
+            if(!$group) {
+                throw new Exception("Esse grupo nao esta mapeado no ambiente. grp_id: " . $enrol->grp_id);
+            } else {
                 // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
                 $transaction = $DB->start_delegated_transaction();
 
