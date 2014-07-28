@@ -25,6 +25,7 @@ require_once("base.php");
 class local_wsmiidle_enrol extends wsmiidle_base {
 
     public static function enrol_user_course($enrol) {
+        global $DB;
 
         //validate parameters
         $params = self::validate_parameters(self::enrol_user_course_parameters(), array('enrol' => $enrol));
@@ -45,6 +46,25 @@ class local_wsmiidle_enrol extends wsmiidle_base {
             throw new Exception("Nenhum usuario esta mapeado para o aluno com alu_id: " . $enrol->alu_id);
         }
 
+        if($enrol->grp_id) {
+
+            $group = get_group_by_grp_id($enrol->grp_id);
+
+            if($group) {
+                // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
+                $transaction = $DB->start_delegated_transaction();
+
+                $groupmember['groupid'] = $group->groupid;
+                $groupmember['userid'] = $userid;
+                $groupmember['timeadded'] = time();
+
+                $res = $DB->insert_record('groups_members', $groupmember);
+
+                // Persiste as operacoes em caso de sucesso.
+                $transaction->allow_commit();
+            }
+        }
+
         self::enrol_user_in_moodle_course($userid, $courseid, self::STUDENT_ROLEID);
 
         return array(
@@ -60,6 +80,7 @@ class local_wsmiidle_enrol extends wsmiidle_base {
                     array(
                         'mat_id' => new external_value(PARAM_INT, 'Id da matricula na turma no gestor'),
                         'trm_id' => new external_value(PARAM_INT, 'Id da turma'),
+                        'grp_id' => new external_value(PARAM_INT, 'Id do grupo'),
                         'alu_id' => new external_value(PARAM_INT, 'Id do aluno'),
                         'mat_codigo' => new external_value(PARAM_TEXT, 'Codigo da matricula')
                     )
