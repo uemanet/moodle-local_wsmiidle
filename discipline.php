@@ -127,7 +127,7 @@ class local_wsmiidle_discipline extends wsmiidle_base {
         );
     }
     public static function update_discipline($discipline) {
-        global $DB;
+        global $DB, $CFG;
 
         //validate parameters
         $params = self::validate_parameters(self::update_discipline_parameters(), array('discipline' => $discipline));
@@ -174,7 +174,19 @@ class local_wsmiidle_discipline extends wsmiidle_base {
             $section->prf_id = 0;
         }
 
+        // Atualiza o controle da integracao
         $DB->update_record('itg_disciplina_section', $section);
+
+        //Atualiza a section do curso
+        $coursesection = $DB->get_record('course_sections', array('id'=>$section->sectionid), '*', MUST_EXIST);
+        if($coursesection->name != $discipline->name) {
+            $coursesection->name = $discipline->name;
+            $DB->update_record('course_sections', $coursesection);
+
+            // Recria o cache do curso
+            require_once($CFG->libdir . "/modinfolib.php");
+            rebuild_course_cache($courseid, true);
+        }
 
         // Persiste as operacoes em caso de sucesso.
         $transaction->allow_commit();

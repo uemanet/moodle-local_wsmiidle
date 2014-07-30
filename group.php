@@ -24,7 +24,7 @@ require_once("base.php");
 
 class local_wsmiidle_group extends wsmiidle_base {
     public static function create_group($group) {
-        global $DB;
+        global $DB, $CFG;
 
         // Valida os parametros.
         $params = self::validate_parameters(self::create_group_parameters(), array('group' => $group));
@@ -74,6 +74,9 @@ class local_wsmiidle_group extends wsmiidle_base {
             $courseoptions->groupmode = 1;
             $courseoptions->groupmodeforce = 1;
             $DB->update_record('course', $courseoptions);
+
+            // Invalidate the grouping cache for the course
+            cache_helper::invalidate_by_definition('core', 'groupdata', array(), array($courseid));
 
             // Prepara o array de retorno.
             $returndata = null;
