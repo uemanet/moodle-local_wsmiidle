@@ -33,9 +33,9 @@ class local_wsmiidle_user extends wsmiidle_base {
         // Transforma o array em objeto.
         $student = (object)$student;
 
-        // lowercase email e username
-        $student->email = strtolower($student->email);
-        $student->username = strtolower($student->username);
+        // lowercase e remove espacos email e username
+        $student->email = str_replace(" ", "", strtolower($student->email));
+        $student->username = str_replace(" ", "", strtolower($student->username));
 
         // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
         $transaction = $DB->start_delegated_transaction();
@@ -105,6 +105,9 @@ class local_wsmiidle_user extends wsmiidle_base {
 
         // Transforma o array em objeto.
         $student = (object)$student;
+
+        // lowercase e remove espacos email
+        $student->email = str_replace(" ", "", strtolower($student->email));
 
         // Inicia a transacao, qualquer erro que aconteca o rollback sera executado.
         $transaction = $DB->start_delegated_transaction();
