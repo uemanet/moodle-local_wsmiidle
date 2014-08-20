@@ -36,10 +36,12 @@ class local_wsmiidle_grade extends wsmiidle_base {
             $userid = self::get_user_by_alu_id($grade['alu_id']);
 
             if($userid) {
+                $nota = self::get_grade_by_itemid($grade['itemid'], $userid);
                 $gradeRetorno[] = array(
                     'alu_id' => $grade['alu_id'],
                     'itemid' => $grade['itemid'],
-                    'grade' => self::get_grade_by_itemid($grade['itemid'], $userid),
+                    'tiponota' => $grade['tiponota'],
+                    'grade' => $nota,
                     'status' => 'success',
                     'message' => 'Nota recebida com sucesso'
                 );
@@ -47,6 +49,7 @@ class local_wsmiidle_grade extends wsmiidle_base {
                 $gradeRetorno[] = array(
                     'alu_id' => $grade['alu_id'],
                     'itemid' => $grade['itemid'],
+                    'tiponota' => $grade['tiponota'],
                     'grade' => 0,
                     'status' => 'warning',
                     'message' => 'Aluno nao mapeado a um usuario do moodle'
@@ -63,7 +66,8 @@ class local_wsmiidle_grade extends wsmiidle_base {
                     new external_single_structure(
                         array(
                             'alu_id' => new external_value(PARAM_INT, 'Id do aluno'),
-                            'itemid' => new external_value(PARAM_INT, 'Id do item de nota da atividade')
+                            'itemid' => new external_value(PARAM_INT, 'Id do item de nota da atividade'),
+                            'tiponota' => new external_value(PARAM_TEXT, 'Tipo de nota')
                         )
                     )
                 )
@@ -74,8 +78,9 @@ class local_wsmiidle_grade extends wsmiidle_base {
         return new external_multiple_structure(
             new external_single_structure(
                 array(
-                    'alu_id'       => new external_value(PARAM_INT, 'Id do aluno no academico'),
+                    'alu_id' => new external_value(PARAM_INT, 'Id do aluno no academico'),
                     'itemid' => new external_value(PARAM_INT, 'Id do item de nota'),
+                    'tiponota' => new external_value(PARAM_TEXT, 'Tipo de nota'),
                     'grade' => new external_value(PARAM_FLOAT, 'Nota do aluno no item'),
                     'status' => new external_value(PARAM_TEXT, 'Status da operacao'),
                     'message' => new external_value(PARAM_TEXT, 'Mensagem da operacao')
@@ -93,7 +98,14 @@ class local_wsmiidle_grade extends wsmiidle_base {
             if($grade->rawscaleid) {
                 $finalgrade = self::get_grade_by_scale($grade->rawscaleid, $grade->finalgrade);
             } else {
-                $finalgrade = $grade->finalgrade;
+                if($grade->rawgrademax > 10) {
+                    if($grade->finalgrade > 1) {
+                        $finalgrade = ($grade->finalgrade - 1) / $grade->rawgrademax;
+                        $finalgrade = number_format($finalgrade, 2);
+                    }
+                } else {
+                    $finalgrade = number_format($grade->finalgrade, 2);
+                }
             }
         }
 
