@@ -103,7 +103,9 @@ class local_wsmiidle_grade extends wsmiidle_base {
         }
 
         // Formata a nota final
-        $finalgrade = number_format($grade->finalgrade, 2);
+        if($grade->finalgrade) {
+            $finalgrade = number_format($grade->finalgrade, 2);
+        }
 
         // Caso a nota maxima seja maior que 10 formata para o valor adequado
         if($grade->rawgrademax > 10 && $grade->finalgrade > 1) {
