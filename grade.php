@@ -89,8 +89,15 @@ class local_wsmiidle_grade extends wsmiidle_base {
     protected static function get_grade_by_itemid($itemid, $userid){
         global $DB;
 
-        $grade = $DB->get_record('grade_grades', array('itemid'=>$itemid, 'userid'=>$userid), '*');
         $finalgrade = 0;
+
+        $sql = "SELECT gg.*, gi.scaleid 
+                FROM {grade_grades} gg
+                INNER JOIN {grade_items} gi ON gi.id = gg.itemid
+                WHERE userid = :userid
+                AND itemid = :itemid";
+
+        $grade = $DB->get_record_sql($sql, array('userid' => $userid, 'itemid' => $itemid));
 
         // Retorna 0 caso nao seja encontrados registros
         if(!$grade) {
@@ -98,8 +105,8 @@ class local_wsmiidle_grade extends wsmiidle_base {
         }
 
         // Caso a nota tenha escala vai buscar a nota final
-        if($grade->rawscaleid) {
-            return self::get_grade_by_scale($grade->rawscaleid, $grade->finalgrade);
+        if($grade->scaleid) {
+            return self::get_grade_by_scale($grade->scaleid, $grade->finalgrade);
         }
 
         // Formata a nota final
@@ -119,9 +126,9 @@ class local_wsmiidle_grade extends wsmiidle_base {
         $scale = $DB->get_record('scale', array('id'=>$scaleid), '*');
 
         $scale = $scale->scale;
-        $scale = str_replace(' ', '', $scale);
+        // $scale = str_replace(' ', '', $scale);
 
-        $scale_arr = explode(',', $scale);
+        $scale_arr = explode(', ', $scale);
 
         $grade = (int)$grade - 1;
 
