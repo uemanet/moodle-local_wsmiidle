@@ -29,8 +29,6 @@ class local_wsmiidle_grade extends wsmiidle_base {
         //validate parameters
         $params = self::validate_parameters(self::get_grades_batch_parameters(), array('grades' => $grades));
 
-        $grades = $grades;
-
         foreach ($grades as $g => $grade) {
             // Busca o id do usuario apartir do alu_id do aluno.
             $userid = self::get_user_by_alu_id($grade['alu_id']);
@@ -81,7 +79,7 @@ class local_wsmiidle_grade extends wsmiidle_base {
                     'alu_id' => new external_value(PARAM_INT, 'Id do aluno no academico'),
                     'itemid' => new external_value(PARAM_INT, 'Id do item de nota'),
                     'tiponota' => new external_value(PARAM_TEXT, 'Tipo de nota'),
-                    'grade' => new external_value(PARAM_FLOAT, 'Nota do aluno no item'),
+                    'grade' => new external_value(PARAM_TEXT, 'Nota do aluno no item'),
                     'status' => new external_value(PARAM_TEXT, 'Status da operacao'),
                     'message' => new external_value(PARAM_TEXT, 'Mensagem da operacao')
                 )
@@ -94,19 +92,23 @@ class local_wsmiidle_grade extends wsmiidle_base {
         $grade = $DB->get_record('grade_grades', array('itemid'=>$itemid, 'userid'=>$userid), '*');
         $finalgrade = 0;
 
-        if($grade) {
-            if($grade->rawscaleid) {
-                $finalgrade = self::get_grade_by_scale($grade->rawscaleid, $grade->finalgrade);
-            } else {
-                if($grade->rawgrademax > 10) {
-                    if($grade->finalgrade > 1) {
-                        $finalgrade = ($grade->finalgrade - 1) / $grade->rawgrademax;
-                        $finalgrade = number_format($finalgrade, 2);
-                    }
-                } else {
-                    $finalgrade = number_format($grade->finalgrade, 2);
-                }
-            }
+        // Retorna 0 caso nao seja encontrados registros
+        if(!$grade) {
+            return 0;
+        }
+
+        // Caso a nota tenha escala vai buscar a nota final
+        if($grade->rawscaleid) {
+            return self::get_grade_by_scale($grade->rawscaleid, $grade->finalgrade);
+        }
+
+        // Formata a nota final
+        $finalgrade = number_format($grade->finalgrade, 2);
+
+        // Caso a nota maxima seja maior que 10 formata para o valor adequado
+        if($grade->rawgrademax > 10 && $grade->finalgrade > 1) {
+            $finalgrade = ($grade->finalgrade - 1) / $grade->rawgrademax;
+            $finalgrade = number_format($finalgrade, 2);
         }
 
         return $finalgrade;
