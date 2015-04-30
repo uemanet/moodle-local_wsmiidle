@@ -81,16 +81,10 @@ class local_wsmiidle_manager {
         $isEnrolled = $DB->count_records('itg_user_discipline', array('sectionid' => $section->sectionid, 'userid' => $event->userid));
 
         if(!$isEnrolled) {
-            switch ($event->eventname) {
-                case '\mod_assign\event\submission_status_viewed':
-                case '\mod_assign\event\submission_form_viewed':
-                case '\mod_forum\event\course_module_viewed':
-                    $redirecttime = 0;
-                break;
-                
-                default:
-                    $redirecttime = 5;
-                break;
+            
+            $redirecttime = 5;
+            if(in_array($event->eventname, local_wsmiidle_helper::$lookupeventswithoutredirecttime)) {
+                $redirecttime = 0;
             }
 
             redirect(new moodle_url('/course/view.php',
@@ -119,18 +113,6 @@ class local_wsmiidle_manager {
      */
     public function get_courseid() {
         return $this->courseid;
-    }
-
-    /**
-     * Get the filter manager.
-     *
-     * @return block_xp_filter_manager
-     */
-    public function get_filter_manager() {
-        if (!$this->filtermanager) {
-            $this->filtermanager = new block_xp_filter_manager($this);
-        }
-        return $this->filtermanager;
     }
 
     /**

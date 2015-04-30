@@ -24,27 +24,60 @@ defined('MOODLE_INTERNAL') || die();
 
 class local_wsmiidle_helper {
 
+    public static $lookupeventswithoutredirecttime = array(
+        '\mod_assign\event\submission_status_viewed',
+        '\mod_assign\event\submission_form_viewed',
+        '\mod_resource\event\course_module_viewed',
+        '\mod_forum\event\course_module_viewed',
+    );
+
+    public static $lookupevents = array(
+        '\mod_page\event\course_module_viewed',
+        '\mod_folder\event\course_module_viewed',
+        '\mod_quiz\event\course_module_viewed',
+        '\mod_wiki\event\page_viewed',
+        '\mod_forum\event\discussion_viewed',
+        '\mod_quiz\event\attempt_viewed'
+    );
+
     /**
      * Observe the events, and dispatch them if necessary.
      *
      * @param \core\event\base $event The event.
      * @return void
      */
-    public static function observer(\core\event\base $event) {
-        // var_dump($event);
-        // exit;
-        switch ($event->eventname) {
-            case '\mod_assign\event\submission_status_viewed':
-            case '\mod_assign\event\submission_form_viewed':
-                self::verifyEvent($event);
-            break;
-        }
-
-        if($event instanceof \core\event\course_module_viewed) {
+    public static function observer(\core\event\base $event)
+    {
+        if(self::isMonitoredEvent($event)) {
             self::verifyEvent($event);
         }
     }
-    protected static function verifyEvent($event) {
+    
+    /**
+     *
+     * @param \core\event\base $event The event.
+     * @return boolean
+     */
+    protected static function isMonitoredEvent(\core\event\base $event)
+    {
+        if(in_array($event->eventname, array_merge(self::$lookupevents, self::$lookupeventswithoutredirecttime))) {
+            return true;
+        }
+
+        if($event instanceof \core\event\course_module_viewed) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Observe the events, and dispatch them if necessary.
+     *
+     * @param \core\event\base $event The event.
+     * @return void
+     */
+    protected static function verifyEvent(\core\event\base $event) {
         if(is_siteadmin()) {
             return;
         }
